@@ -4,12 +4,17 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.a7minutesworkout.databinding.ActivityExerciseBinding
 import android.os.CountDownTimer
+import android.view.View
 import android.widget.Toast
 
 class ExerciseActivity : AppCompatActivity() {
 
     private var restTimer: CountDownTimer? = null
     private var restProgress = 0
+
+    private var exerciseTimer: CountDownTimer? = null
+    private var exerciseProgress = 0
+
     private var binding: ActivityExerciseBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +33,7 @@ class ExerciseActivity : AppCompatActivity() {
 
     private fun setupRestView() {
         if (restTimer != null) {
-            restTimer!!.cancel()
+            restTimer?.cancel()
             restProgress = 0
         }
         setRestProgressBar()
@@ -44,8 +49,38 @@ class ExerciseActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@ExerciseActivity,
-                    "Here now we will start the exercise.",
+                setupExerciseView()
+            }
+        }.start()
+    }
+
+    private fun setupExerciseView() {
+        binding?.flProgressBar?.visibility = View.INVISIBLE
+        binding?.tvTitle?.text = "Exercise Name"
+        binding?.flExerciseView?.visibility = View.VISIBLE
+
+        if (exerciseTimer != null) {
+            exerciseTimer?.cancel()
+            exerciseProgress = 0
+        }
+
+        setExerciseProgressBar()
+    }
+
+    private fun setExerciseProgressBar() {
+        binding?.progressBarExercise?.progress = exerciseProgress
+
+        exerciseTimer = object : CountDownTimer(30000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                exerciseProgress++
+                binding?.progressBarExercise?.progress = 30 - exerciseProgress
+                binding?.tvTimerExercise?.text = (30 - exerciseProgress).toString()
+            }
+
+            override fun onFinish() {
+                Toast.makeText(
+                    this@ExerciseActivity,
+                    "This is 30 seconds completed so now we will add all the exercises.",
                     Toast.LENGTH_SHORT
                 ).show()
             }
